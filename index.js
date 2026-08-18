@@ -51,6 +51,54 @@ app.post('/send-email', async (req, res) => {
   const { name, email, company, daysSinceLogin, tier } = req.body;
   await sendEmail(name, email, company, daysSinceLogin, tier);
   res.json({ success: true });
+});app.post('/fetch-hubspot', async (req, res) => {
+  const { apiKey } = req.body;
+
+  if (!apiKey) {
+    return res.status(400).json({
+      success: false,
+      error: 'HubSpot API token is required'
+    });
+  }
+
+  try {
+    const response = await fetch(
+      'https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,email,company',
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || 'Invalid HubSpot token or access denied'
+      );
+    }
+
+    const contacts = (data.results || [])
+      .map((c) => ({
+        name: `${c.properties.firstname || ''} ${c.properties.lastname || ''}`.trim(),
+        email: c.properties.email || '',
+        company: c.properties.company || ''
+      }))
+      .filter((c) => c.name && c.email);
+
+    res.json({
+      success: true,
+      contacts
+    });
+
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      error: err.message
+    });
+  }
 });
 
 app.listen(3001, () => console.log('Email server running on port 3001'));
