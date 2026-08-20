@@ -12,8 +12,33 @@ const supabase = createClient(
 );
 
 async function sendEmail(name, email, company, daysSince, tier) {
-  const subject = tier === 'warning' ? `Hey ${name}, we missed you` : `${name}, here's what you're missing`;
-  const html = `<p>Hey ${name},</p><p>It's been ${daysSince} days. — Team ${company}</p>`;
+  let subject = tier === 'warning' ? `Hey ${name}, we missed you` : `${name}, here's what you're missing`;
+  let body = `Hi ${name},\n\nIt's been ${daysSince} days. — Team ${company}`;
+
+  try {
+    const { data: settings } = await supabase
+      .from('email_settings')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (settings) {
+      subject = settings.subject
+        .replace(/{{name}}/g, name)
+        .replace(/{{company}}/g, company)
+        .replace(/{{days}}/g, daysSince);
+
+      body = settings.body
+        .replace(/{{name}}/g, name)
+        .replace(/{{company}}/g, company)
+        .replace(/{{days}}/g, daysSince);
+    }
+  } catch (e) {
+    console.log('Template fetch failed, using default');
+  }
+
+  const html = body.split('\n').map(line => `<p>${line}</p>`).join('');
+
   await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
