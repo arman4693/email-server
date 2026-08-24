@@ -88,12 +88,13 @@ app.post('/send-email', async (req, res) => {
 
   try {
     const response = await fetch(
-      'https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,email,company',
+          `https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=firstname,lastname,email,company&hapikey=${apiKey}`,
       {
         headers: {
-          Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         }
+      }
+      }
       }
     );
 
