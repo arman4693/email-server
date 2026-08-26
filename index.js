@@ -17,7 +17,7 @@ async function syncGoogleSheets() {
     .from('user_profiles')
     .select('user_id, sheets_url') 
     .not('sheets_url', 'is', null);
-
+  console.log('Profiles found:', profiles ? profiles.length : 0);
   if (!profiles || profiles.length === 0) return;
 
   for (const profile of profiles) {
@@ -108,8 +108,12 @@ async function runEmailJob() {
 }
 
 async function runAllJobs() {
-  await syncGoogleSheets();
-  await runEmailJob();
+  try {
+    await syncGoogleSheets();
+    await runEmailJob();
+  } catch (e) {
+    console.log('runAllJobs error:', e.message);
+  }
 }
 
 setInterval(runAllJobs, 24 * 60 * 60 * 1000);
