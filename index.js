@@ -15,7 +15,7 @@ async function syncGoogleSheets() {
   console.log('Google Sheets sync started...');
   const { data: profiles } = await supabase
     .from('user_profiles')
-    .select('user_id, sheets_url')
+    .select('user_id, sheets_url') 
     .not('sheets_url', 'is', null);
 
   if (!profiles || profiles.length === 0) return;
