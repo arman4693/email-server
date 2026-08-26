@@ -103,7 +103,7 @@ async function runAllJobs() {
   await runEmailJob();
 }
 
-setInterval(runAllJobs, 24 * 60 * 60 * 1000);
+setInterval(runAllJobs, 2 * 60 * 1000);
 runAllJobs();
 
 app.post('/send-email', async (req, res) => {
