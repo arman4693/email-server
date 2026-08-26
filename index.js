@@ -34,11 +34,13 @@ async function syncGoogleSheets() {
         const email = rows[i][emailIndex]?.trim();
         const lastLogin = rows[i][lastLoginIndex]?.trim();
         if (!email || !lastLogin) continue;
-        await supabase
-          .from('customers')
-          .update({ last_login: lastLogin })
-          .eq('email', email)
-          .eq('user_id', profile.user_id);
+     await supabase
+  .from('customers')
+  .upsert({
+    email: email,
+    last_login: lastLogin,
+    user_id: profile.user_id
+  }, { onConflict: 'email,user_id' });
       }
       console.log('Sheets synced for user:', profile.user_id);
     } catch (e) {
