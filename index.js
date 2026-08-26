@@ -29,18 +29,25 @@ async function syncGoogleSheets() {
       const headers = rows[0].map(h => h.trim().toLowerCase());
       const emailIndex = headers.indexOf('email');
       const lastLoginIndex = headers.indexOf('last_login');
+      const nameIndex = headers.indexOf('name');
+      const companyIndex = headers.indexOf('company');
       if (emailIndex === -1 || lastLoginIndex === -1) continue;
       for (let i = 1; i < rows.length; i++) {
         const email = rows[i][emailIndex]?.trim();
         const lastLogin = rows[i][lastLoginIndex]?.trim();
+        const name = rows[i][nameIndex]?.trim() || '';
+        const company = rows[i][companyIndex]?.trim() || '';
         if (!email || !lastLogin) continue;
-     await supabase
-  .from('customers')
-  .upsert({
-    email: email,
-    last_login: lastLogin,
-    user_id: profile.user_id
-  }, { onConflict: 'email,user_id' });
+        await supabase
+          .from('customers')
+          .upsert({
+            email: email,
+            name: name,
+            company: company,
+            last_login: lastLogin,
+            user_id: profile.user_id,
+            risk_score: 20
+          }, { onConflict: 'email,user_id' });
       }
       console.log('Sheets synced for user:', profile.user_id);
     } catch (e) {
@@ -105,7 +112,7 @@ async function runAllJobs() {
   await runEmailJob();
 }
 
-setInterval(runAllJobs, 2 * 60 * 1000);
+setInterval(runAllJobs, 24 * 60 * 60 * 1000);
 runAllJobs();
 
 app.post('/send-email', async (req, res) => {
