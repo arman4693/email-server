@@ -12,7 +12,7 @@ const supabase = createClient(
 );
 
 async function syncGoogleSheets() {
-  console.log('Google Sheets sync started...');
+  console.log('Google Sheets sync started...'); 
   const { data: profiles } = await supabase
     .from('user_profiles')
     .select('user_id, sheets_url') 
