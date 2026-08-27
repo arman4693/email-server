@@ -23,9 +23,9 @@ async function syncGoogleSheets() {
   for (const profile of profiles) {
     try {
       const csvUrl = profile.sheets_url.replace('/edit', '/export?format=csv');
-      console.log('Fetching URL:', csvUrl);
-      console.log('Fetch status:', response.status);
-      const response = await fetch(csvUrl);
+console.log('Fetching URL:', csvUrl);
+const response = await fetch(csvUrl);
+console.log('Fetch status:', response.status);
       const text = await response.text();
       const rows = text.trim().split('\n').map(r => r.split(','));
       const headers = rows[0].map(h => h.trim().toLowerCase());
