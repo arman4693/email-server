@@ -15,7 +15,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "node-fetch": "^3.3.2",
-    "@supabase/supabase-js": "^2.39.0"
+    "@supabase/supabase-js": "^2.39.0",
     "node-cron": "^3.0.0"
   }
 }
