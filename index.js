@@ -118,7 +118,8 @@ async function runAllJobs() {
   }
 }
 
-setInterval(runAllJobs, 24 * 60 * 60 * 1000);
+const cron = require('node-cron');
+cron.schedule('0 9 * * *', runAllJobs);
 runAllJobs();
 
 app.post('/send-email', async (req, res) => {
