@@ -160,4 +160,4 @@ app.post('/fetch-hubspot', async (req, res) => {
   }
 });
 
-app.listen(3001, () => console.log('Email server running on port 3001'));
+app.listen(process.env.PORT || 3001, () => console.log('Email server running on port ' + (process.env.PORT || 3001)));
